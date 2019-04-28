@@ -1,0 +1,103 @@
+
+Materiales
+
+    Motores paso a paso
+    Polea dentada y engranajes
+    Sujeciones para las varillas
+    Varillas metálicas
+    Motor shield
+    Arduino mega para poder tener más pines y aumentar la funcionalidad
+    Servo
+    Batería
+    Listones de madera
+
+
+Montaje
+
+La parte de montaje se divide en 2 partes, el montaje de la estructura y la conexión de los componentes:
+
+
+1. Estructura
+
+La construcción de la estructura fue uno de los puntos más complicados del proyecto ya que determina en gran medida la precisión del producto final. En esta versión hemos encontrado varios problemas, sin embargo también hemos detectado cual seria su solución, todo esto está explicado en los apartados correspondientes.
+
+La estructura básica son los 3 tablones, hay que cortarlos lo suficientemente largos para que sobren unos 5 centímetros en cada extremo del tamaño que pensemos imprimir (en nuestro caso era un A3, 297 x 420 mm). Una vez cortados hay que fijar los soportes de las barras junto con los tensores de la correa.
+
+
+
+Una vez preparados los soportes tenemos que meter la barra del eje Y, junto a la barra colocamos las piezas que soportarán el eje X. En este soporte montamos el motor y la junta de los ejes para poder montar el eje X. Ahora colocamos el listón del eje X atronillándolo al soporte del eje Y y la pieza que lo soporta en el otro listón
+
+Una vez acabado todo esto ya solo nos queda colocar el estabilizador y el motor del eje X. Por ultimo colocamos las correas y las tensamos.
+
+
+2. Circuito
+
+
+Software
+
+La parte software de este proyecto se divide tres bloques:
+
+
+1. Convertir imagen (GCode)
+
+
+Para dibujar la imagen necesitamos primero convertirla para que el arduino la pueda interpretar. Utilizaremos para ello el programa "Inkscape". Primero transformamos la imagen en mapa de bits.
+
+
+
+A continuación, convertimos el mapa de bits obtenido en lenguaje GCode. GCode es un lenguaje que traduce los puntos en coordenadas que le indican a la máquina a dónde desplazarse, en qué orden y a qué velocidad. Vemos alguna de las instrucciones:  
+
+
+Ejemplo GCode:
+
+G00 Z5.000000 (levantar el lápiz, subimos el eje Z)
+
+G00 X103.091800 Y203.011719 (se coloca en la coordenada inicial)
+
+G01 Z-1.000000 (bajar el lápiz para comenzar a pintar las coordenadas) (leemos las instrucciones y vamos moviendo el lápiz manteniendo el lápiz bajado)
+
+G03 X74.691837 Y219.875853 Z-1.000000 I0.023180 J-23.932592
+
+G01 X43.384766 Y209.238281 Z-1.000000 G03 X10.402123 Y212.123598 Z-1.000000 I-49.882859 J-380.262773
+
+G03 X6.695312 Y210.857422 Z-1.000000 I-0.236693 J-5.366116
+
+G01 X109.353520 Y262.779297 Z-1.000000 (una vez terminadas las instrucciones volvemos a levantar el lápiz)
+
+G00 Z5.000000
+
+
+2. Programa para dibujar imagen (Arduino)
+
+
+Nuestro programa recibe línea a línea una serie de instrucciones GCode. Por tanto nuestro código analiza y procesa una línea y la traduce en un movimiento de los ejes. Una vez terminado el movimiento se reinicia el loop para hacer lo propio con la siguiente linea.
+
+
+3. Enviar imagen (Procesing)
+
+
+Una vez que hemos cargado nuestro programa en el arduino necesitamos transferir la imagen en GCode a la máquina, para ello emplearemos Processing. Cuando ejecutamos este programa nos aparece una nueva ventana con opciones.
+
+
+
+Primero debemos presionar la opción "p" para seleccionar el puerto. Seleccionamos aquel en el que esté conectado nuestro arduino. Después presionamos opción "g" para adjuntar el archivo .gcode que queramos pasar al plotter. Una vez seleccionado el archivo este se envía y el arduino comienza a procesarlo automáticamente.
+
+
+Problemas
+
+    Estructura más complicada de lo esperado: en un principio se esperaba el uso de un número reducido de piezas y de poca complejidad, pero a medida que se iba construyendo la estructura se tuvieron que modificar algunas de las piezas para poder construir la estructura deseada
+    Menor precisión de la esperada: el soporte creado para la sujeción del bolígrafo no es lo suficientemente robusto para evitar la vibración producida por la estructura al moverse, por lo que el bolígrafo no tiene la suficiente precisión para pintar con claridad, haciendo que los dibujos resultantes salgan difuminados
+    Interpretación del GCode: al pasar las imágenes a GCode, este salía muy detallado, pero no había mucha documentación para poder interpretar completamente el código
+    Alimentación de los motores: estos necesitan de una fuente con gran voltaje para poder funcionar bien, pero debido a eso provoca que componentes como Motor Shield se calienten demasiado. Esto preocupa en parte ya que puede que un uso continuado del plotter provoque la rotura de alguno de los componentes
+
+
+Mejoras
+
+    Aumentar la precisión del plotter: mediante la creación de un soporte con más robustez o con mayor superficie de agarre
+    Incluir un cabezal con más ranuras: así se podrían pintar imágenes con más de un color
+    Poder mandar la información por bluetooth: ahora mismo se necesita que el ordenador este conectado con el plotter para poder pasar la información
+    Automatizar el paso de imagen a GCode: actualmente convertimos la imagen a GCode mediante un programa externo y luego se pasa esta información al programa. Esta mejora consistiría en la elaboración de un código que pudiera procesar la imagen e interpretar los comandos para que el plotter funcione. Es decir, solo tendríamos que pasar la imagen al Arduino y este haría el resto
+    Incluir una segunda barra con y un listón en el eje X de forma que el soporte de los bolígrafos se pudiera colocar en medio, perpendicular a la hoja disminuyendo las vibraciones en el soporte, lo que aumentaria sustancialmente la precisión
+
+
+Archivos adjuntos
